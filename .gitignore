@@ -1,0 +1,47 @@
+# editor
+*.swp
+*.swo
+.DS_Store
+# ctags generated file.
+/tags
+# backup files.
+*.bak
+/.devcontainer/
+
+# go
+*.prof
+*.LOG
+*.LOG.*
+*.test
+license_coverage.txt
+vendor
+go.work
+go.work.sum
+
+# C++
+CMakeFiles
+CMakeCache.txt
+*.cmake
+Makefile
+*.cbp
+*.a
+
+# output
+e2e-test
+/bin/
+*-test/
+
+# vscode
+.vscode
+!.vscode/settings.json
+!.vscode/launch.json
+
+# goland
+.idea
+
+# unit test
+.coretestCoverage.txt
+.testCoverage.txt
+
+# e2e report
+report

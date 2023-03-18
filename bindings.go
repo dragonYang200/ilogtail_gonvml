@@ -63,6 +63,22 @@ nvmlReturn_t nvmlDeviceGetHandleByIndex(unsigned int index, nvmlDevice_t *device
   return nvmlDeviceGetHandleByIndexFunc(index, device);
 }
 
+nvmlReturn_t (*nvmlEventSetCreateFunc)(nvmlEventSet_t *set);
+nvmlReturn_t nvmlEventSetCreate(nvmlEventSet_t *set) {
+  if (nvmlEventSetCreateFunc == NULL) {
+    return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  return nvmlEventSetCreateFunc(set);
+}
+
+nvmlReturn_t (*nvmlDeviceRegisterEventsFunc)(nvmlDevice_t device, unsigned long long eventTypes, nvmlEventSet_t set);
+nvmlReturn_t nvmlDeviceRegisterEvents(nvmlDevice_t device, unsigned long long eventTypes, nvmlEventSet_t set) {
+  if (nvmlDeviceRegisterEventsFunc == NULL) {
+    return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  return nvmlDeviceRegisterEventsFunc(device, eventTypes, set);
+}
+
 nvmlReturn_t (*nvmlDeviceGetMinorNumberFunc)(nvmlDevice_t device, unsigned int *minorNumber);
 nvmlReturn_t nvmlDeviceGetMinorNumber(nvmlDevice_t device, unsigned int *minorNumber) {
   if (nvmlDeviceGetMinorNumberFunc == NULL) {
@@ -143,6 +159,78 @@ nvmlReturn_t nvmlDeviceGetDecoderUtilization(nvmlDevice_t device, unsigned int* 
   return nvmlDeviceGetDecoderUtilizationFunc(device, utilization, samplingPeriodUs);
 }
 
+nvmlReturn_t (*nvmlEventSetFreeFunc)(nvmlEventSet_t set);
+nvmlReturn_t nvmlEventSetFree(nvmlEventSet_t set) {
+  if (nvmlEventSetFreeFunc == NULL) {
+    return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  return nvmlEventSetFreeFunc(set);
+}
+
+nvmlReturn_t (*nvmlDeviceGetTotalEccErrorsFunc)(nvmlDevice_t device, nvmlMemoryErrorType_t errorType, nvmlEccCounterType_t counterType, unsigned long long *eccCounts);
+nvmlReturn_t nvmlDeviceGetTotalEccErrors(nvmlDevice_t device, nvmlMemoryErrorType_t errorType, nvmlEccCounterType_t counterType, unsigned long long *eccCounts) {
+  if (nvmlDeviceGetTotalEccErrorsFunc == NULL) {
+    return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  return nvmlDeviceGetTotalEccErrorsFunc(device, errorType, counterType, eccCounts);
+}
+
+nvmlReturn_t (*nvmlDeviceGetDetailedEccErrorsFunc)(nvmlDevice_t device, nvmlMemoryErrorType_t errorType, nvmlEccCounterType_t counterType, nvmlEccErrorCounts_t *eccCounts);
+nvmlReturn_t nvmlDeviceGetDetailedEccErrors(nvmlDevice_t device, nvmlMemoryErrorType_t errorType, nvmlEccCounterType_t counterType, nvmlEccErrorCounts_t *eccCounts) {
+  if (nvmlDeviceGetDetailedEccErrorsFunc == NULL) {
+    return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  return nvmlDeviceGetDetailedEccErrorsFunc(device, errorType, counterType, eccCounts);
+}
+
+nvmlReturn_t (*nvmlDeviceGetRetiredPagesFunc)(nvmlDevice_t device, nvmlPageRetirementCause_t cause, unsigned int *pageCount, unsigned long long *addresses);
+nvmlReturn_t nvmlDeviceGetRetiredPages(nvmlDevice_t device, nvmlPageRetirementCause_t cause, unsigned int *pageCount, unsigned long long *addresses) {
+  if (nvmlDeviceGetRetiredPagesFunc == NULL) {
+    return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  return nvmlDeviceGetRetiredPagesFunc(device, cause, pageCount, addresses);
+}
+
+nvmlReturn_t (*nvmlDeviceGetRemappedRowsFunc)(nvmlDevice_t device, unsigned int *corrRows, unsigned int *uncRows, unsigned int *isPending, unsigned int *failureOccurred);
+nvmlReturn_t nvmlDeviceGetRemappedRows(nvmlDevice_t device, unsigned int *corrRows, unsigned int *uncRows, unsigned int *isPending, unsigned int *failureOccurred) {
+  if (nvmlDeviceGetRemappedRowsFunc == NULL) {
+    return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  return nvmlDeviceGetRemappedRowsFunc(device, corrRows, uncRows, isPending, failureOccurred);
+}
+
+nvmlReturn_t (*nvmlDeviceGetFieldValuesFunc)(nvmlDevice_t device, int valuesCount, nvmlFieldValue_t *values);
+nvmlReturn_t nvmlDeviceGetFieldValues(nvmlDevice_t device, int valuesCount, nvmlFieldValue_t *values) {
+  if (nvmlDeviceGetFieldValuesFunc == NULL) {
+    return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  return nvmlDeviceGetFieldValuesFunc(device, valuesCount, values);
+}
+
+nvmlReturn_t (*nvmlDeviceGetPcieThroughputFunc)(nvmlDevice_t device, nvmlPcieUtilCounter_t counter, unsigned int *value);
+nvmlReturn_t nvmlDeviceGetPcieThroughput(nvmlDevice_t device, nvmlPcieUtilCounter_t counter, unsigned int *value) {
+  if (nvmlDeviceGetPcieThroughputFunc == NULL) {
+    return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  return nvmlDeviceGetPcieThroughputFunc(device, counter, value);
+}
+
+nvmlReturn_t (*nvmlDeviceGetClockInfoFunc)(nvmlDevice_t device, nvmlClockType_t type, unsigned int *clock);
+nvmlReturn_t nvmlDeviceGetClockInfo(nvmlDevice_t device, nvmlClockType_t type, unsigned int *clock) {
+  if (nvmlDeviceGetClockInfoFunc == NULL) {
+    return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  return nvmlDeviceGetClockInfoFunc(device, type, clock);
+}
+
+nvmlReturn_t (*nvmlEventSetWaitFunc)(nvmlEventSet_t set, nvmlEventData_t * data, unsigned int timeoutms);
+nvmlReturn_t nvmlEventSetWait(nvmlEventSet_t set, nvmlEventData_t * data, unsigned int timeoutms) {
+  if (nvmlEventSetWaitFunc == NULL) {
+    return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  return nvmlEventSetWaitFunc(set, data, timeoutms);
+}
+
 nvmlReturn_t (*nvmlDeviceGetSamplesFunc)(nvmlDevice_t device, nvmlSamplingType_t type, unsigned long long lastSeenTimeStamp, nvmlValueType_t *sampleValType, unsigned int *sampleCount, nvmlSample_t *samples);
 
 // Loads the "libnvidia-ml.so.1" shared library.
@@ -155,7 +243,10 @@ nvmlReturn_t nvmlInit_dl(void) {
   }
   nvmlInitFunc = dlsym(nvmlHandle, "nvmlInit_v2");
   if (nvmlInitFunc == NULL) {
-    return NVML_ERROR_FUNCTION_NOT_FOUND;
+	nvmlInitFunc = dlsym(nvmlHandle, "nvmlInit");
+	if (nvmlInitFunc == NULL) {
+		return NVML_ERROR_FUNCTION_NOT_FOUND;
+	}
   }
   nvmlShutdownFunc = dlsym(nvmlHandle, "nvmlShutdown");
   if (nvmlShutdownFunc == NULL) {
@@ -171,11 +262,64 @@ nvmlReturn_t nvmlInit_dl(void) {
   }
   nvmlDeviceGetCountFunc = dlsym(nvmlHandle, "nvmlDeviceGetCount_v2");
   if (nvmlDeviceGetCountFunc == NULL) {
-    return NVML_ERROR_FUNCTION_NOT_FOUND;
+	nvmlDeviceGetCountFunc = dlsym(nvmlHandle, "nvmlDeviceGetCount");
+	if (nvmlDeviceGetCountFunc == NULL) {
+		return NVML_ERROR_FUNCTION_NOT_FOUND;
+	}
   }
   nvmlDeviceGetHandleByIndexFunc = dlsym(nvmlHandle, "nvmlDeviceGetHandleByIndex_v2");
   if (nvmlDeviceGetHandleByIndexFunc == NULL) {
-    return NVML_ERROR_FUNCTION_NOT_FOUND;
+	nvmlDeviceGetHandleByIndexFunc = dlsym(nvmlHandle, "nvmlDeviceGetHandleByIndex");
+	if (nvmlDeviceGetHandleByIndexFunc == NULL) {
+		return NVML_ERROR_FUNCTION_NOT_FOUND;
+	}
+  }
+  nvmlEventSetCreateFunc = dlsym(nvmlHandle, "nvmlEventSetCreate");
+  if (nvmlEventSetCreateFunc == NULL) {
+	return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  nvmlDeviceRegisterEventsFunc = dlsym(nvmlHandle, "nvmlDeviceRegisterEvents");
+  if (nvmlDeviceRegisterEventsFunc == NULL) {
+	return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  nvmlEventSetFreeFunc = dlsym(nvmlHandle, "nvmlEventSetFree");
+  if (nvmlEventSetFreeFunc == NULL) {
+	return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  nvmlDeviceGetTotalEccErrorsFunc = dlsym(nvmlHandle, "nvmlDeviceGetTotalEccErrors");
+  if (nvmlDeviceGetTotalEccErrorsFunc == NULL) {
+	return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  nvmlDeviceGetDetailedEccErrorsFunc = dlsym(nvmlHandle, "nvmlDeviceGetDetailedEccErrors");
+  if (nvmlDeviceGetDetailedEccErrorsFunc == NULL) {
+	return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  nvmlDeviceGetRetiredPagesFunc = dlsym(nvmlHandle, "nvmlDeviceGetRetiredPages");
+  if (nvmlDeviceGetRetiredPagesFunc == NULL) {
+	return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  nvmlDeviceGetRemappedRowsFunc = dlsym(nvmlHandle, "nvmlDeviceGetRemappedRows");
+  if (nvmlDeviceGetRemappedRowsFunc == NULL) {
+	return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  nvmlDeviceGetFieldValuesFunc = dlsym(nvmlHandle, "nvmlDeviceGetFieldValues");
+  if (nvmlDeviceGetFieldValuesFunc == NULL) {
+	return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  nvmlDeviceGetPcieThroughputFunc = dlsym(nvmlHandle, "nvmlDeviceGetPcieThroughput");
+  if (nvmlDeviceGetPcieThroughputFunc == NULL) {
+	return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  nvmlDeviceGetClockInfoFunc = dlsym(nvmlHandle, "nvmlDeviceGetClockInfo");
+  if (nvmlDeviceGetClockInfoFunc == NULL) {
+	return NVML_ERROR_FUNCTION_NOT_FOUND;
+  }
+  nvmlEventSetWaitFunc = dlsym(nvmlHandle, "nvmlEventSetWait_v2");
+  if (nvmlEventSetWaitFunc == NULL) {
+	nvmlEventSetWaitFunc = dlsym(nvmlHandle, "nvmlEventSetWait");
+	if (nvmlEventSetWaitFunc == NULL) {
+		return NVML_ERROR_FUNCTION_NOT_FOUND;
+	}
   }
   nvmlDeviceGetMinorNumberFunc = dlsym(nvmlHandle, "nvmlDeviceGetMinorNumber");
   if (nvmlDeviceGetMinorNumberFunc == NULL) {
@@ -313,6 +457,7 @@ import (
 	"errors"
 	"fmt"
 	"time"
+	"unsafe"
 )
 
 const (
@@ -322,6 +467,41 @@ const (
 )
 
 var errLibraryNotLoaded = errors.New("could not load NVML library")
+
+// Device is the handle for the device.
+// This handle is obtained by calling DeviceHandleByIndex().
+type Device struct {
+	dev C.nvmlDevice_t
+}
+
+type EventSet struct {
+	set C.nvmlEventSet_t
+}
+
+type EccErrorCounts struct {
+	L1Cache      uint64
+	L2Cache      uint64
+	DeviceMemory uint64
+	RegisterFile uint64
+}
+
+type FieldValue struct {
+	FieldId     uint32
+	ScopeId     uint32
+	Timestamp   int64
+	LatencyUsec int64
+	ValueType   uint32
+	NvmlReturn  uint32
+	Value       [8]byte
+}
+
+type EventData struct {
+	Device            Device
+	EventType         uint64
+	EventData         uint64
+	GpuInstanceId     uint32
+	ComputeInstanceId uint32
+}
 
 // Initialize initializes NVML.
 // Call this before calling any other methods.
@@ -368,12 +548,6 @@ func DeviceCount() (uint, error) {
 	var n C.uint
 	r := C.nvmlDeviceGetCount(&n)
 	return uint(n), errorString(r)
-}
-
-// Device is the handle for the device.
-// This handle is obtained by calling DeviceHandleByIndex().
-type Device struct {
-	dev C.nvmlDevice_t
 }
 
 // DeviceHandleByIndex returns the device handle for a particular index.
@@ -521,4 +695,121 @@ func (d Device) DecoderUtilization() (uint, uint, error) {
 	var sp C.uint
 	r := C.nvmlDeviceGetDecoderUtilization(d.dev, &n, &sp)
 	return uint(n), uint(sp), errorString(r)
+}
+
+func EventSetCreate() (EventSet, error) {
+	var set EventSet
+	cSet := (*C.nvmlEventSet_t)(unsafe.Pointer(&set))
+	r := C.nvmlEventSetCreate(cSet)
+	return set, errorString(r)
+}
+
+func DeviceRegisterEvents(Device Device, EventTypes uint64, Set EventSet) Return {
+	cDevice := *(*C.nvmlDevice_t)(unsafe.Pointer(&Device))
+	cEventTypes := (C.ulonglong)(EventTypes)
+	cSet := *(*C.nvmlEventSet_t)(unsafe.Pointer(&Set))
+	__ret := C.nvmlDeviceRegisterEvents(cDevice, cEventTypes, cSet)
+	__v := (Return)(__ret)
+	return __v
+}
+
+func EventSetFree(Set EventSet) Return {
+	cSet := *(*C.nvmlEventSet_t)(unsafe.Pointer(&Set))
+	__ret := C.nvmlEventSetFree(cSet)
+	__v := (Return)(__ret)
+	return __v
+}
+
+func DeviceGetTotalEccErrors(Device Device, ErrorType MemoryErrorType, CounterType EccCounterType) (uint64, Return) {
+	var EccCounts uint64
+	cDevice := *(*C.nvmlDevice_t)(unsafe.Pointer(&Device))
+	cErrorType := (C.nvmlMemoryErrorType_t)(ErrorType)
+	cCounterType := (C.nvmlEccCounterType_t)(CounterType)
+	cEccCounts := (*C.ulonglong)(unsafe.Pointer(&EccCounts))
+	__ret := C.nvmlDeviceGetTotalEccErrors(cDevice, cErrorType, cCounterType, cEccCounts)
+	__v := (Return)(__ret)
+	return EccCounts, __v
+}
+
+func DeviceGetDetailedEccErrors(Device Device, ErrorType MemoryErrorType, CounterType EccCounterType) (EccErrorCounts, Return) {
+	var EccCounts EccErrorCounts
+	cDevice := *(*C.nvmlDevice_t)(unsafe.Pointer(&Device))
+	cErrorType := (C.nvmlMemoryErrorType_t)(ErrorType)
+	cCounterType := (C.nvmlEccCounterType_t)(CounterType)
+	cEccCounts := (*C.nvmlEccErrorCounts_t)(unsafe.Pointer(&EccCounts))
+	__ret := C.nvmlDeviceGetDetailedEccErrors(cDevice, cErrorType, cCounterType, cEccCounts)
+	__v := (Return)(__ret)
+	return EccCounts, __v
+}
+
+func DeviceGetRetiredPages(Device Device, Cause PageRetirementCause) ([]uint64, Return) {
+	var PageCount uint32 = 1 // Will be reduced upon returning
+	for {
+		Addresses := make([]uint64, PageCount)
+		cDevice := *(*C.nvmlDevice_t)(unsafe.Pointer(&Device))
+		cCause := (C.nvmlPageRetirementCause_t)(Cause)
+		cPageCount := (*C.uint)(unsafe.Pointer(&PageCount))
+		cAddresses := (*C.ulonglong)(unsafe.Pointer(&Addresses[0]))
+		__ret := C.nvmlDeviceGetRetiredPages(cDevice, cCause, cPageCount, cAddresses)
+		__v := (Return)(__ret)
+		if __v == SUCCESS {
+			return Addresses[:PageCount], __v
+		}
+		if __v != ERROR_INSUFFICIENT_SIZE {
+			return nil, __v
+		}
+		PageCount *= 2
+	}
+}
+
+func DeviceGetRemappedRows(Device Device) (int, int, bool, bool, Return) {
+	var CorrRows, UncRows, IsPending, FailureOccured uint32
+	cDevice := *(*C.nvmlDevice_t)(unsafe.Pointer(&Device))
+	cCorrRows := (*C.uint)(unsafe.Pointer(&CorrRows))
+	cUncRows := (*C.uint)(unsafe.Pointer(&UncRows))
+	cIsPending := (*C.uint)(unsafe.Pointer(&IsPending))
+	cFailureOccurred := (*C.uint)(unsafe.Pointer(&FailureOccured))
+	__ret := C.nvmlDeviceGetRemappedRows(cDevice, cCorrRows, cUncRows, cIsPending, cFailureOccurred)
+	__v := (Return)(__ret)
+	return int(CorrRows), int(UncRows), (IsPending != 0), (FailureOccured != 0), __v
+}
+
+func DeviceGetFieldValues(Device Device, Values []FieldValue) Return {
+	ValuesCount := len(Values)
+	cDevice := *(*C.nvmlDevice_t)(unsafe.Pointer(&Device))
+	cValuesCount := (C.int)(int32(ValuesCount))
+	cValues := (*C.nvmlFieldValue_t)(unsafe.Pointer(&Values[0]))
+	__ret := C.nvmlDeviceGetFieldValues(cDevice, cValuesCount, cValues)
+	__v := (Return)(__ret)
+	return __v
+}
+
+func DeviceGetPcieThroughput(Device Device, Counter PcieUtilCounter) (uint32, Return) {
+	var Value uint32
+	cDevice := *(*C.nvmlDevice_t)(unsafe.Pointer(&Device))
+	cCounter := (C.nvmlPcieUtilCounter_t)(Counter)
+	cValue := (*C.uint)(unsafe.Pointer(&Value))
+	__ret := C.nvmlDeviceGetPcieThroughput(cDevice, cCounter, cValue)
+	__v := (Return)(__ret)
+	return Value, __v
+}
+
+func DeviceGetClockInfo(Device Device, _type ClockType) (uint32, Return) {
+	var Clock uint32
+	cDevice := *(*C.nvmlDevice_t)(unsafe.Pointer(&Device))
+	c_type := (C.nvmlClockType_t)(_type)
+	cClock := (*C.uint)(unsafe.Pointer(&Clock))
+	__ret := C.nvmlDeviceGetClockInfo(cDevice, c_type, cClock)
+	__v := (Return)(__ret)
+	return Clock, __v
+}
+
+func EventSetWait(Set EventSet, Timeoutms uint32) (EventData, Return) {
+	var Data EventData
+	cSet := *(*C.nvmlEventSet_t)(unsafe.Pointer(&Set))
+	cData := (*C.nvmlEventData_t)(unsafe.Pointer(&Data))
+	cTimeoutms := (C.uint)(Timeoutms)
+	__ret := C.nvmlEventSetWait(cSet, cData, cTimeoutms)
+	__v := (Return)(__ret)
+	return Data, __v
 }
