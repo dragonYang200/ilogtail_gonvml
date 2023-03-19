@@ -1,3 +1,3 @@
-module github.com/mindprince/gonvml
+module github.com/iLogtail/gonvml
 
 go 1.17
